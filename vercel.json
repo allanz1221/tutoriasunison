@@ -1,0 +1,12 @@
+{
+    "build": {
+      "env": {
+        "PRISMA_GENERATE": "true"
+      }
+    },
+    "scripts": {
+      "postinstall": "prisma generate"
+    },
+    "installCommand": "pnpm install --ignore-scripts && pnpm approve-builds && pnpm run postinstall",
+    "buildCommand": "pnpm run build"
+  }
