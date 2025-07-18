@@ -1,0 +1,24 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PreguntaRespuesta {
+  id        Int    @id @default(autoincrement())
+  pregunta  String
+  respuesta String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChatHistorico {
+  id         Int      @id @default(autoincrement())
+  folio      String   @unique
+  expediente String? 
+  mensajes   Json
+  createdAt  DateTime @default(now())
+}
