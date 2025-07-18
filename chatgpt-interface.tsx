@@ -122,25 +122,6 @@ export default function Component() {
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      {/* Mensaje de bienvenida */}
-      <div className="bg-blue-50 border-b border-blue-200 p-4 text-center">
-        <h2 className="text-lg font-bold text-blue-900 mb-1">Bienvenido al Sistema Integral de Tutorías</h2>
-        <p className="text-blue-800 text-sm">Esta plataforma te permitirá recibir atención y orientación con mayor cobertura y eficiencia. Puedes escribir tu pregunta o seleccionar una de las sugerencias.</p>
-      </div>
-      {/* Nube de etiquetas */}
-      {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 justify-center p-4 bg-blue-50 border-b border-blue-200">
-          {tags.map((tag, idx) => (
-            <button
-              key={idx}
-              className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-xs border border-blue-300 transition"
-              onClick={() => setInputValue(tag)}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      )}
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
         <div className="flex items-center gap-2">
@@ -169,6 +150,27 @@ export default function Component() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto space-y-6">
+          {/* Mensaje de bienvenida y tags como primer mensaje del chat */}
+          <div className="space-y-4">
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <h2 className="text-lg font-bold text-blue-900 mb-1">Bienvenido al Sistema Integral de Tutorías</h2>
+              <p className="text-blue-800 text-sm mb-2">Esta plataforma te permitirá recibir atención y orientación con mayor cobertura y eficiencia. Puedes escribir tu pregunta o seleccionar una de las sugerencias.</p>
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {tags.map((tag, idx) => (
+                    <button
+                      key={idx}
+                      className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-xs border border-blue-300 transition"
+                      onClick={() => setInputValue(tag)}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          {/* Mensajes del usuario y asistente */}
           {messages.map((message) => (
             <div key={message.id} className="space-y-4">
               {/* User Message */}
