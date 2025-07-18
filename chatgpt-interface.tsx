@@ -42,7 +42,9 @@ export default function Component() {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
   const [openCanalizar, setOpenCanalizar] = useState(false)
+  const [openSeguimiento, setOpenSeguimiento] = useState(false)
   const [expediente, setExpediente] = useState("")
+  const [folio, setFolio] = useState("")
   const router = useRouter()
   const [tags, setTags] = useState<string[]>([])
 
@@ -120,25 +122,36 @@ export default function Component() {
     }
   }
 
+  const handleSeguimiento = () => {
+    if (folio.trim()) {
+      setOpenSeguimiento(false)
+      setFolio("")
+      // Redirigir a la página de canalización con el folio
+      router.push(`/canalizacion/${folio.trim()}`)
+    }
+  }
+
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-900">ChatGPT</span>
+          <span className="font-medium text-gray-900">Universidad de Sonora campus Navojoa, Departamento de Ciencias Sociales</span>
           <ChevronDown className="w-4 h-4 text-gray-600" />
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Memoria guardada llena</span>
+          <span className="text-sm text-gray-600">Sistema Integral de Tutorías</span>
           <Info className="w-4 h-4 text-gray-400" />
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="flex items-center gap-2">
-            <Share className="w-4 h-4" />
-            Compartir
-          </Button>
+                  <div className="flex items-center gap-3">
+           <Button variant="ghost" size="sm" className="flex items-center gap-2" onClick={() => router.push("/admin")}>
+             Iniciar Sesión
+            </Button>
+           <Button variant="ghost" size="sm" className="flex items-center gap-2" onClick={() => setOpenSeguimiento(true)}>
+             Seguimiento
+            </Button>
           <Avatar className="w-8 h-8">
             <AvatarFallback className="bg-gray-800 text-white text-xs">
               <User className="w-4 h-4" />
@@ -171,7 +184,7 @@ export default function Component() {
             </div>
           </div>
           {/* Mensajes del usuario y asistente */}
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <div key={message.id} className="space-y-4">
               {/* User Message */}
               <div className="bg-gray-50 rounded-lg p-4">
@@ -182,31 +195,22 @@ export default function Component() {
               <div className="space-y-4">
                 <p className="text-gray-800">{message.respuesta}</p>
                 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-2 pt-4">
-                  <Button variant="ghost" size="sm">
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <ThumbsUp className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <ThumbsDown className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Volume2 className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <RotateCcw className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                    <User className="w-4 h-4" />
-                    <span className="text-sm">Fuentes</span>
-                  </Button>
-                </div>
+                {/* Action Buttons - solo en la última respuesta */}
+                {index === messages.length - 1 && (
+                  <div className="flex items-center gap-2 pt-4">
+                   Canalizar a 
+                    <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm">Jefatura de Departamento</span>
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setOpenCanalizar(true)}>
+                      <span className="text-sm">Bufete Jurídico</span>
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <span className="text-sm">Psicología</span>
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -217,41 +221,61 @@ export default function Component() {
               <span>Buscando respuesta...</span>
             </div>
           )}
-
-          {/* Canalizar a bufete jurídico */}
-          <div className="mt-8 flex flex-col items-center gap-2">
-            <span className="text-gray-700">canalizar a</span>
-            <Dialog open={openCanalizar} onOpenChange={setOpenCanalizar}>
-              <DialogTrigger asChild>
-                <Button variant="default">bufete jurídico</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Canalización a bufete jurídico</DialogTitle>
-                  <DialogDescription>
-                    La canalización puede ser anónima, pero tendrá más certeza si se dan los datos reales.<br/>
-                    Por favor, ingresa el número de expediente (opcional):
-                  </DialogDescription>
-                </DialogHeader>
-                <Input
-                  className="mt-2"
-                  placeholder="Número de expediente (opcional)"
-                  value={expediente}
-                  onChange={e => setExpediente(e.target.value)}
-                />
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="secondary">Cancelar</Button>
-                  </DialogClose>
-                  <Button variant="default" onClick={handleCanalizar} disabled={messages.length === 0}>
-                    Canalizar
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
         </div>
       </main>
+
+      {/* Modal de canalización */}
+      <Dialog open={openCanalizar} onOpenChange={setOpenCanalizar}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Canalización a bufete jurídico</DialogTitle>
+            <DialogDescription>
+              La canalización puede ser anónima, pero tendrá más certeza si se dan los datos reales.<br/>
+              Por favor, ingresa el número de expediente (opcional):
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            className="mt-2"
+            placeholder="Número de expediente (opcional)"
+            value={expediente}
+            onChange={e => setExpediente(e.target.value)}
+          />
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="secondary">Cancelar</Button>
+            </DialogClose>
+            <Button variant="default" onClick={handleCanalizar} disabled={messages.length === 0}>
+              Canalizar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de seguimiento */}
+      <Dialog open={openSeguimiento} onOpenChange={setOpenSeguimiento}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Seguimiento de Conversación</DialogTitle>
+            <DialogDescription>
+              Proporciona tu folio para continuar con la conversación
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            className="mt-2"
+            placeholder="Ingresa tu folio"
+            value={folio}
+            onChange={e => setFolio(e.target.value)}
+          />
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="secondary">Cancelar</Button>
+            </DialogClose>
+            <Button variant="default" onClick={handleSeguimiento} disabled={!folio.trim()}>
+              Continuar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Input Area */}
       <div className="border-t border-gray-200 p-4">
@@ -272,9 +296,7 @@ export default function Component() {
               />
 
               <div className="flex items-center gap-2 shrink-0">
-                <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                  <span className="text-sm">Herramientas</span>
-                </Button>
+
                 <Button variant="ghost" size="sm">
                   <Mic className="w-4 h-4" />
                 </Button>

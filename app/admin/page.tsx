@@ -71,7 +71,7 @@ export default function AdminPage() {
       </nav>
       {section === 'chats' && (
         <>
-          <h1 className="text-2xl font-bold mb-4">Chats guardados</h1>
+          <h1 className="text-2xl font-bold mb-4">Bienvenido al panel de administración de Bufete Jurídico campus Navojoa</h1>
           <table className="w-full border">
             <thead>
               <tr className="bg-gray-100">

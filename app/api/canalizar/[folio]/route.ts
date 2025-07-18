@@ -4,15 +4,28 @@ import { prisma } from "@/lib/prisma"
 export async function POST(req: NextRequest, { params }: { params: { folio: string } }) {
   try {
     const { pregunta, respuesta } = await req.json()
-    if (!pregunta || !respuesta) {
-      return NextResponse.json({ error: "Pregunta y respuesta requeridas" }, { status: 400 })
+    if (!pregunta) {
+      return NextResponse.json({ error: "Pregunta requerida" }, { status: 400 })
     }
     const historico = await prisma.chatHistorico.findUnique({ where: { folio: params.folio } })
     if (!historico) {
       return NextResponse.json({ error: "Folio no encontrado" }, { status: 404 })
     }
     const mensajes = Array.isArray(historico.mensajes) ? historico.mensajes : []
-    mensajes.push({ pregunta, respuesta })
+    
+    // Si hay respuesta, actualizar el mensaje existente
+    if (respuesta && respuesta.trim() !== "") {
+      const mensajeIndex = mensajes.findIndex(m => m.pregunta === pregunta && (!m.respuesta || m.respuesta.trim() === ""))
+      if (mensajeIndex !== -1) {
+        mensajes[mensajeIndex] = { ...mensajes[mensajeIndex], respuesta }
+      } else {
+        return NextResponse.json({ error: "No se encontró la pregunta para responder" }, { status: 404 })
+      }
+    } else {
+      // Si no hay respuesta, agregar nueva pregunta
+      mensajes.push({ pregunta, respuesta: "" })
+    }
+    
     await prisma.chatHistorico.update({
       where: { folio: params.folio },
       data: { mensajes }
