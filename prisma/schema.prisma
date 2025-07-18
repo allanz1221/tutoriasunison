@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -9,7 +11,7 @@ generator client {
 }
 
 model PreguntaRespuesta {
-  id        Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   pregunta  String
   respuesta String
   createdAt DateTime @default(now())
@@ -22,18 +24,4 @@ model ChatHistorico {
   expediente String? 
   mensajes   Json
   createdAt  DateTime @default(now())
-}
-
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-export async function getData() {
-  const { data, error } = await supabase
-    .from('tu_tabla')
-    .select('*')
-  return { data, error }
 }
