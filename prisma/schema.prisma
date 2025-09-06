@@ -1,14 +1,14 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
 model PreguntaRespuesta {
-  id        Int      @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   pregunta  String
   respuesta String
 }
@@ -16,7 +16,7 @@ model PreguntaRespuesta {
 model ChatHistorico {
   id         Int      @id @default(autoincrement())
   folio      String   @unique
-  expediente String? 
-  mensajes   Json
+  expediente String?
+  mensajes   String   @db.LongText
   createdAt  DateTime @default(now())
 }
