@@ -9,15 +9,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Pregunta requerida" }, { status: 400 })
     }
 
-    // Buscar coincidencias por inclusión (case-insensitive)
-    const registros = await prisma.preguntaRespuesta.findMany({
-      where: {
-        pregunta: {
-          contains: pregunta.trim(),
-          mode: 'insensitive'
-        }
-      }
-    })
+    // Buscar coincidencias por inclusión (case-insensitive usando SQL raw)
+    const registros = await prisma.$queryRaw`
+      SELECT * FROM PreguntaRespuesta 
+      WHERE LOWER(pregunta) LIKE LOWER(${'%' + pregunta.trim() + '%'})
+    `
 
     if (!registros || registros.length === 0) {
       return NextResponse.json({ 
@@ -27,11 +23,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Concatenar todas las respuestas encontradas
-    const respuestas = registros.map(r => r.respuesta).join("\n\n---\n\n")
+    const respuestas = registros.map((r: any) => r.respuesta).join("\n\n---\n\n")
 
     return NextResponse.json({ 
       respuesta: respuestas,
-      ids: registros.map(r => r.id)
+      ids: registros.map((r: any) => r.id)
     })
   } catch (error) {
     console.error("Error en la API:", error)
