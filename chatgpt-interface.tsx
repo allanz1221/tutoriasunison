@@ -108,17 +108,27 @@ export default function Component() {
 
   const handleCanalizar = async () => {
     if (messages.length === 0) return
-    const res = await fetch("/api/canalizar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ expediente: expediente.trim() || null, mensajes: messages })
-    })
-    const data = await res.json()
-    if (data.folio) {
-      setOpenCanalizar(false)
-      setExpediente("")
-      // Redirigir a la página del folio
-      router.push(`/canalizacion/${data.folio}`)
+    
+    try {
+      const res = await fetch("/api/canalizar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ expediente: expediente.trim() || null, mensajes: messages })
+      })
+      
+      const data = await res.json()
+      
+      if (data.folio) {
+        setOpenCanalizar(false)
+        setExpediente("")
+        // Redirigir a la página del folio
+        router.push(`/canalizacion/${data.folio}`)
+      } else {
+        alert("Error: No se pudo generar el folio de canalización")
+      }
+    } catch (error) {
+      console.error("Error en handleCanalizar:", error)
+      alert("Error al procesar la canalización")
     }
   }
 
