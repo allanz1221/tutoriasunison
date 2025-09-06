@@ -107,7 +107,12 @@ export default function Component() {
   }
 
   const handleCanalizar = async () => {
-    if (messages.length === 0) return
+    if (messages.length === 0) {
+      alert("No hay mensajes para canalizar")
+      return
+    }
+    
+    console.log("Mensajes a canalizar:", messages)
     
     try {
       const res = await fetch("/api/canalizar", {
@@ -116,19 +121,24 @@ export default function Component() {
         body: JSON.stringify({ expediente: expediente.trim() || null, mensajes: messages })
       })
       
+      console.log("Respuesta de la API:", res.status, res.ok)
+      
       const data = await res.json()
+      console.log("Datos recibidos:", data)
       
       if (data.folio) {
+        console.log("Folio generado exitosamente:", data.folio)
         setOpenCanalizar(false)
         setExpediente("")
         // Redirigir a la página del folio
         router.push(`/canalizacion/${data.folio}`)
       } else {
+        console.error("No se recibió folio en la respuesta:", data)
         alert("Error: No se pudo generar el folio de canalización")
       }
     } catch (error) {
       console.error("Error en handleCanalizar:", error)
-      alert("Error al procesar la canalización")
+      alert("Error al procesar la canalización: " + error.message)
     }
   }
 

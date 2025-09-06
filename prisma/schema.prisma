@@ -16,7 +16,7 @@ model PreguntaRespuesta {
 model ChatHistorico {
   id         Int      @id @default(autoincrement())
   folio      String   @unique
-  expediente String?
-  mensajes   String   @db.LongText
+  expediente String? 
+  mensajes   Json
   createdAt  DateTime @default(now())
 }
