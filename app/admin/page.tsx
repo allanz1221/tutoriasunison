@@ -13,7 +13,17 @@ export default function AdminPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (user === "admin" && pass === "admin") {
+    try {
+      const login = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, pass }),
+      })
+      if (!login.ok) {
+        const data = await login.json()
+        setError(data.error || "No se pudo iniciar sesión")
+        return
+      }
       setLogged(true)
       setError("")
       // Cargar chats
@@ -22,8 +32,8 @@ export default function AdminPage() {
         const data = await res.json()
         setChats(data.chats)
       }
-    } else {
-      setError("Usuario o contraseña incorrectos")
+    } catch {
+      setError("No se pudo conectar con el servidor")
     }
   }
 
@@ -101,4 +111,4 @@ export default function AdminPage() {
       )}
     </div>
   )
-} 
+}
